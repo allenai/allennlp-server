@@ -19,4 +19,4 @@ COPY tests/ tests/
 LABEL maintainer="allennlp-contact@allenai.org"
 
 
-ENTRYPOINT ["pytest", "tests"]
+ENTRYPOINT ["python", "configure.py"]

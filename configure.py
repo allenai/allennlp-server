@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Run a config explorer for allennlp.")
     parser.add_argument("--port", type=int, default=8123, help="port to serve the wizard on")
-    subparser.add_argument(
+    parser.add_argument(
             "--include-package",
             type=str,
             action="append",
