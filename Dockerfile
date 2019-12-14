@@ -12,10 +12,11 @@ COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 COPY server_simple.py server_simple.py
-COPY config_explorer.py config_explorer.py
-COPY config_explorer.html config_explorer.html
+COPY configure.py configure.py
+COPY config_explorer/ config_explorer/
+COPY tests/ tests/
 
 LABEL maintainer="allennlp-contact@allenai.org"
 
 
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["pytest", "tests"]
