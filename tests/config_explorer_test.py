@@ -139,4 +139,3 @@ class TestConfigExplorer(AllenNlpTestCase):
 
         assert config["type"] == "l1"
         assert any(item["name"] == "alpha" for item in items)
-

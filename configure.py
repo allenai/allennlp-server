@@ -24,6 +24,7 @@ from gevent.pywsgi import WSGIServer
 
 from allennlp.service.config_explorer import make_app
 
+
 def _run_wizard(args: argparse.Namespace) -> None:
     app = make_app(args.include_package)
     CORS(app)
@@ -36,13 +37,15 @@ def _run_wizard(args: argparse.Namespace) -> None:
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Run a config explorer for allennlp.")
-    parser.add_argument("--port", type=int, default=8123, help="port to serve the wizard on")
     parser.add_argument(
-            "--include-package",
-            type=str,
-            action="append",
-            default=[],
-            help="additional packages to include",
-        )
+        "--port", type=int, default=8123, help="port to serve the wizard on"
+    )
+    parser.add_argument(
+        "--include-package",
+        type=str,
+        action="append",
+        default=[],
+        help="additional packages to include",
+    )
     args = parser.parse_args()
     _run_wizard(args)
