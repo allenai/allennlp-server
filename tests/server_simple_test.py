@@ -11,7 +11,9 @@ from allennlp.predictors import Predictor
 from server_simple import make_app
 
 
-def post_json(client: flask.testing.FlaskClient, endpoint: str, data: JsonDict) -> flask.Response:
+def post_json(
+    client: flask.testing.FlaskClient, endpoint: str, data: JsonDict
+) -> flask.Response:
     return client.post(endpoint, content_type="application/json", data=json.dumps(data))
 
 
@@ -27,7 +29,9 @@ class TestSimpleServer(AllenNlpTestCase):
     def setUp(self):
         super().setUp()
 
-        archive = load_archive(self.FIXTURES_ROOT / "bidaf" / "serialization" / "model.tar.gz")
+        archive = load_archive(
+            self.FIXTURES_ROOT / "bidaf" / "serialization" / "model.tar.gz"
+        )
         self.bidaf_predictor = Predictor.from_archive(archive, "machine-comprehension")
 
     def tearDown(self):
@@ -39,7 +43,9 @@ class TestSimpleServer(AllenNlpTestCase):
             pass
 
     def test_standard_model(self):
-        app = make_app(predictor=self.bidaf_predictor, field_names=["passage", "question"])
+        app = make_app(
+            predictor=self.bidaf_predictor, field_names=["passage", "question"]
+        )
         app.testing = True
         client = app.test_client()
 
@@ -67,10 +73,16 @@ class TestSimpleServer(AllenNlpTestCase):
 
     def test_sanitizer(self):
         def sanitize(result: JsonDict) -> JsonDict:
-            return {key: value for key, value in result.items() if key.startswith("best_span")}
+            return {
+                key: value
+                for key, value in result.items()
+                if key.startswith("best_span")
+            }
 
         app = make_app(
-            predictor=self.bidaf_predictor, field_names=["passage", "question"], sanitizer=sanitize
+            predictor=self.bidaf_predictor,
+            field_names=["passage", "question"],
+            sanitizer=sanitize,
         )
         app.testing = True
         client = app.test_client()
