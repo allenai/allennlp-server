@@ -31,10 +31,10 @@ class TestSimpleServer(AllenNlpTestCase):
         super().setUp()
 
         print(os.getcwd())
-        archive = load_archive(
-            "tests/fixtures/bidaf/model.tar.gz"
+        archive = load_archive("tests/fixtures/bidaf/model.tar.gz")
+        self.bidaf_predictor = Predictor.from_archive(
+            archive, "allennlp_rc.predictors.ReadingComprehensionPredictor"
         )
-        self.bidaf_predictor = Predictor.from_archive(archive, "allennlp_rc.predictors.ReadingComprehensionPredictor")
 
     def tearDown(self):
         super().tearDown()

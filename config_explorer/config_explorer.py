@@ -26,6 +26,7 @@ from allennlp.common.util import import_submodules
 
 logger = logging.getLogger(__name__)
 
+
 class ServerError(Exception):
     status_code = 400
 
@@ -40,6 +41,7 @@ class ServerError(Exception):
         error_dict = dict(self.payload or ())
         error_dict["message"] = self.message
         return error_dict
+
 
 def make_app(include_packages: Sequence[str] = ()) -> Flask:
     """

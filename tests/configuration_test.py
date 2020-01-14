@@ -2,10 +2,16 @@ from typing import Dict
 
 import pytest
 
-from config_explorer.configuration import configure, Config, BASE_CONFIG, json_annotation, choices
+from config_explorer.configuration import (
+    configure,
+    Config,
+    BASE_CONFIG,
+    json_annotation,
+    choices,
+)
 from allennlp.common.testing import AllenNlpTestCase
 from allennlp.nn.activations import Activation
-from allennlp.data.dataset_readers import *
+
 
 class TestConfiguration(AllenNlpTestCase):
     def test_configure_top_level(self):
@@ -20,7 +26,9 @@ class TestConfiguration(AllenNlpTestCase):
         assert "allennlp.data.dataset_readers.snli.SnliReader" in config
 
     def test_specific_subclass(self):
-        config = configure("allennlp.data.dataset_readers.semantic_role_labeling.SrlReader")
+        config = configure(
+            "allennlp.data.dataset_readers.semantic_role_labeling.SrlReader"
+        )
         assert isinstance(config, Config)
 
         items = {item.name: item for item in config.items}

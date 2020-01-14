@@ -37,7 +37,6 @@ from config_explorer.config_explorer import ServerError
 logger = logging.getLogger(__name__)
 
 
-
 def make_app(
     predictor: Predictor,
     field_names: List[str] = None,

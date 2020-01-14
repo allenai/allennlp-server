@@ -51,7 +51,10 @@ def full_name(cla55: Optional[type]) -> str:
     if cla55 is None:
         return "?"
 
-    if issubclass(cla55, Initializer) and cla55 not in [Initializer, PretrainedModelInitializer]:
+    if issubclass(cla55, Initializer) and cla55 not in [
+        Initializer,
+        PretrainedModelInitializer,
+    ]:
         init_fn = getattr(cla55(), "_init_function")
         return f"{init_fn.__module__}.{init_fn.__name__}"
 
@@ -84,7 +87,11 @@ def json_annotation(cla55: Optional[type]):
         return {"origin": "str"}
 
     # Hack because e.g. typing.Union isn't a type.
-    if isinstance(cla55, type) and issubclass(cla55, Initializer) and cla55 != Initializer:
+    if (
+        isinstance(cla55, type)
+        and issubclass(cla55, Initializer)
+        and cla55 != Initializer
+    ):
         init_fn = getattr(cla55(), "_init_function")
         return {"origin": f"{init_fn.__module__}.{init_fn.__name__}"}
 
@@ -94,7 +101,10 @@ def json_annotation(cla55: Optional[type]):
     # Special handling for compound types
     if origin in (Dict, dict):
         key_type, value_type = args
-        return {"origin": "Dict", "args": [json_annotation(key_type), json_annotation(value_type)]}
+        return {
+            "origin": "Dict",
+            "args": [json_annotation(key_type), json_annotation(value_type)],
+        }
     elif origin in (Tuple, tuple, List, list, Sequence, collections.abc.Sequence):
         return {
             "origin": _remove_prefix(str(origin)),
@@ -137,7 +147,9 @@ class ConfigItem(NamedTuple):
                 json.dumps(self.default_value)
                 json_dict["defaultValue"] = self.default_value
             except TypeError:
-                print(f"unable to json serialize {self.default_value}, using None instead")
+                print(
+                    f"unable to json serialize {self.default_value}, using None instead"
+                )
                 json_dict["defaultValue"] = None
 
         if self.comment:
@@ -214,7 +226,9 @@ def _docspec_comments(obj) -> Dict[str, str]:
     # Sometimes our docstring is on the class, and sometimes it's on the initializer,
     # so we've got to check both.
     class_docstring = getattr(obj, "__doc__", None)
-    init_docstring = getattr(obj.__init__, "__doc__", None) if hasattr(obj, "__init__") else None
+    init_docstring = (
+        getattr(obj.__init__, "__doc__", None) if hasattr(obj, "__init__") else None
+    )
 
     docstring = class_docstring or init_docstring or ""
 
@@ -287,7 +301,10 @@ def _auto_config(cla55: Type[T]) -> Config[T]:
             continue
 
         # Don't include params for an Optimizer
-        if torch.optim.Optimizer in getattr(cla55, "__bases__", ()) and name == "params":
+        if (
+            torch.optim.Optimizer in getattr(cla55, "__bases__", ())
+            and name == "params"
+        ):
             continue
 
         # Don't include datasets in the trainer
