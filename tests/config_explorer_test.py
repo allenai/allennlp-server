@@ -44,7 +44,7 @@ class TestConfigExplorer(AllenNlpTestCase):
         data = json.loads(response.get_data())
 
         assert (
-            "allennlp.data.dataset_readers.reading_comprehension.squad.SquadReader"
+            "allennlp.data.dataset_readers.snli.SnliReader"
             in data["choices"]
         )
 

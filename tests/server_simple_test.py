@@ -34,7 +34,7 @@ class TestSimpleServer(AllenNlpTestCase):
         archive = load_archive(
             "tests/fixtures/bidaf/model.tar.gz"
         )
-        self.bidaf_predictor = Predictor.from_archive(archive, "machine-comprehension")
+        self.bidaf_predictor = Predictor.from_archive(archive, "allennlp_rc.predictors.ReadingComprehensionPredictor")
 
     def tearDown(self):
         super().tearDown()
