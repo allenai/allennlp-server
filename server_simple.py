@@ -32,23 +32,10 @@ from allennlp.common.util import import_submodules
 from allennlp.models.archival import load_archive
 from allennlp.predictors import Predictor
 
+from config_explorer.config_explorer import ServerError
+
 logger = logging.getLogger(__name__)
 
-
-class ServerError(Exception):
-    status_code = 400
-
-    def __init__(self, message, status_code=None, payload=None):
-        Exception.__init__(self)
-        self.message = message
-        if status_code is not None:
-            self.status_code = status_code
-        self.payload = payload
-
-    def to_dict(self):
-        error_dict = dict(self.payload or ())
-        error_dict["message"] = self.message
-        return error_dict
 
 
 def make_app(
