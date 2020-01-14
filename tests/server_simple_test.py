@@ -8,6 +8,7 @@ from allennlp.common.util import JsonDict
 from allennlp.common.testing import AllenNlpTestCase
 from allennlp.models.archival import load_archive
 from allennlp.predictors import Predictor
+from allennlp_rc.models import BidirectionalAttentionFlow
 from server_simple import make_app
 
 
@@ -29,8 +30,9 @@ class TestSimpleServer(AllenNlpTestCase):
     def setUp(self):
         super().setUp()
 
+        print(os.getcwd())
         archive = load_archive(
-            self.FIXTURES_ROOT / "bidaf" / "serialization" / "model.tar.gz"
+            "tests/fixtures/bidaf/model.tar.gz"
         )
         self.bidaf_predictor = Predictor.from_archive(archive, "machine-comprehension")
 

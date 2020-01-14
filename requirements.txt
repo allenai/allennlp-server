@@ -1,5 +1,7 @@
 
-allennlp
+git+https://github.com/allenai/allennlp@master
+git+https://github.com/allenai/allennlp-reading-comprehension@c241f324e8a5af5197808b0f6dc629f1513add54
+
 # Accessing files from S3 directly.
 boto3
 

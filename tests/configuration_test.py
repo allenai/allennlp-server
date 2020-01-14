@@ -5,7 +5,7 @@ import pytest
 from config_explorer.configuration import configure, Config, BASE_CONFIG, json_annotation, choices
 from allennlp.common.testing import AllenNlpTestCase
 from allennlp.nn.activations import Activation
-
+from allennlp.data.dataset_readers import *
 
 class TestConfiguration(AllenNlpTestCase):
     def test_configure_top_level(self):
