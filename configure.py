@@ -22,7 +22,7 @@ import argparse
 from flask_cors import CORS
 from gevent.pywsgi import WSGIServer
 
-from allennlp.service.config_explorer import make_app
+from config_explorer.config_explorer import make_app
 
 
 def _run_wizard(args: argparse.Namespace) -> None:
