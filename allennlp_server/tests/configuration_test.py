@@ -1,16 +1,16 @@
 from typing import Dict
 
 import pytest
-
-from config_explorer.configuration import (
-    configure,
-    Config,
-    BASE_CONFIG,
-    json_annotation,
-    choices,
-)
 from allennlp.common.testing import AllenNlpTestCase
 from allennlp.nn.activations import Activation
+
+from allennlp_server.config_explorer.configuration import (
+    BASE_CONFIG,
+    choices,
+    Config,
+    configure,
+    json_annotation,
+)
 
 
 class TestConfiguration(AllenNlpTestCase):
@@ -26,14 +26,12 @@ class TestConfiguration(AllenNlpTestCase):
         assert "allennlp.data.dataset_readers.snli.SnliReader" in config
 
     def test_specific_subclass(self):
-        config = configure(
-            "allennlp.data.dataset_readers.semantic_role_labeling.SrlReader"
-        )
+        config = configure("allennlp.data.dataset_readers.semantic_role_labeling.SrlReader")
         assert isinstance(config, Config)
 
         items = {item.name: item for item in config.items}
 
-        assert len(items) == 4
+        assert len(items) == 3
 
         assert "token_indexers" in items
         token_indexers = items["token_indexers"]
@@ -48,11 +46,6 @@ class TestConfiguration(AllenNlpTestCase):
         domain_identifier = items["bert_model_name"]
         assert domain_identifier.annotation == str
         assert domain_identifier.default_value is None
-
-        assert "lazy" in items
-        lazy = items["lazy"]
-        assert lazy.annotation == bool
-        assert not lazy.default_value
 
     def test_errors(self):
         with pytest.raises(ModuleNotFoundError):

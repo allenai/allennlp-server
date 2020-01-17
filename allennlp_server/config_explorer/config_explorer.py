@@ -16,13 +16,11 @@ python -m allennlp.service.config_explorer \
 ```
 """
 
-from typing import Sequence
 import logging
 
-from flask import Flask, request, Response, jsonify, send_file
+from flask import Flask, jsonify, request, Response, send_file
 
-from config_explorer.configuration import configure, choices
-from allennlp.common.util import import_submodules
+from .configuration import choices, configure
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +29,7 @@ class ServerError(Exception):
     status_code = 400
 
     def __init__(self, message, status_code=None, payload=None):
-        Exception.__init__(self)
+        super().__init__(self)
         self.message = message
         if status_code is not None:
             self.status_code = status_code
@@ -43,14 +41,10 @@ class ServerError(Exception):
         return error_dict
 
 
-def make_app(include_packages: Sequence[str] = ()) -> Flask:
+def make_app() -> Flask:
     """
     Creates a Flask app that serves up a simple configuration wizard.
     """
-    # Load modules
-    for package_name in include_packages:
-        import_submodules(package_name)
-
     app = Flask(__name__)
 
     @app.errorhandler(ServerError)

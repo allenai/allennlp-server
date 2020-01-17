@@ -1,0 +1,19 @@
+#### TESTING-RELATED PACKAGES ####
+
+# Automatic code formatting
+black
+
+# Checks style, syntax, and other useful errors.
+flake8
+
+# Static type checking
+mypy==0.761
+
+pytest
+
+# Allows generation of coverage reports with pytest.
+pytest-cov
+
+
+# Used for generating doc comments
+numpydoc>=0.8.0

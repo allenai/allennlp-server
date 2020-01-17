@@ -1,20 +1,17 @@
+import importlib
 import json
 import os
 
-import flask
 import flask.testing
-
-from allennlp.common.util import JsonDict
 from allennlp.common.testing import AllenNlpTestCase
+from allennlp.common.util import JsonDict
 from allennlp.models.archival import load_archive
 from allennlp.predictors import Predictor
-from allennlp_rc.models import BidirectionalAttentionFlow
-from server_simple import make_app
+
+from allennlp_server.commands.server_simple import make_app
 
 
-def post_json(
-    client: flask.testing.FlaskClient, endpoint: str, data: JsonDict
-) -> flask.Response:
+def post_json(client: flask.testing.FlaskClient, endpoint: str, data: JsonDict) -> flask.Response:
     return client.post(endpoint, content_type="application/json", data=json.dumps(data))
 
 
@@ -31,7 +28,8 @@ class TestSimpleServer(AllenNlpTestCase):
         super().setUp()
 
         print(os.getcwd())
-        archive = load_archive("tests/fixtures/bidaf/model.tar.gz")
+        importlib.import_module("allennlp_rc.models")
+        archive = load_archive("allennlp_server/tests/fixtures/bidaf/model.tar.gz")
         self.bidaf_predictor = Predictor.from_archive(
             archive, "allennlp_rc.predictors.ReadingComprehensionPredictor"
         )
@@ -45,9 +43,7 @@ class TestSimpleServer(AllenNlpTestCase):
             pass
 
     def test_standard_model(self):
-        app = make_app(
-            predictor=self.bidaf_predictor, field_names=["passage", "question"]
-        )
+        app = make_app(predictor=self.bidaf_predictor, field_names=["passage", "question"])
         app.testing = True
         client = app.test_client()
 
@@ -75,16 +71,10 @@ class TestSimpleServer(AllenNlpTestCase):
 
     def test_sanitizer(self):
         def sanitize(result: JsonDict) -> JsonDict:
-            return {
-                key: value
-                for key, value in result.items()
-                if key.startswith("best_span")
-            }
+            return {key: value for key, value in result.items() if key.startswith("best_span")}
 
         app = make_app(
-            predictor=self.bidaf_predictor,
-            field_names=["passage", "question"],
-            sanitizer=sanitize,
+            predictor=self.bidaf_predictor, field_names=["passage", "question"], sanitizer=sanitize,
         )
         app.testing = True
         client = app.test_client()
