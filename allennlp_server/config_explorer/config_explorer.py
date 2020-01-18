@@ -20,7 +20,7 @@ import logging
 
 from flask import Flask, jsonify, request, Response, send_file
 
-from .configuration import choices, configure
+from allennlp_server.config_explorer.configuration import choices, configure
 
 logger = logging.getLogger(__name__)
 
