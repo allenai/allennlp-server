@@ -1,19 +1,6 @@
 """
 This is a tiny webapp for generating configuration stubs for your models.
 It's still experimental.
-
-```
-python -m allennlp.service.config_explorer
-```
-
-will launch the app on `localhost:8123` (you can specify a different port if you like).
-
-It can also incorporate your own classes if you use the `include_package` flag:
-
-```
-python -m allennlp.service.config_explorer \
-    --include-package my_library
-```
 """
 
 import logging
