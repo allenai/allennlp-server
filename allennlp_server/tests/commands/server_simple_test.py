@@ -1,8 +1,12 @@
 import importlib
+import io
 import json
 import os
+import sys
+from contextlib import redirect_stdout
 
 import flask.testing
+from allennlp.commands import main
 from allennlp.common.testing import AllenNlpTestCase
 from allennlp.common.util import JsonDict
 from allennlp.models.archival import load_archive
@@ -68,6 +72,24 @@ class TestSimpleServer(AllenNlpTestCase):
         for data in data_list:
             assert "best_span_str" in data
             assert "span_start_logits" in data
+
+    def test_subcommand(self):
+        kebab_args = [
+            "run.py",
+            "serve",
+            "--archive-path",
+            "allennlp_server/tests/fixtures/bidaf/model.tar.gz",
+            "--field-name",
+            "passage",
+            "--field-name",
+            "question",
+        ]
+        sys.argv = kebab_args
+        with io.StringIO() as buf, redirect_stdout(buf):
+            main()
+            output = buf.getvalue()
+
+        # TODO(bryant1410): continue the test when the changes are ready in allennlp.
 
     def test_sanitizer(self):
         def sanitize(result: JsonDict) -> JsonDict:
