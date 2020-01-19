@@ -2,7 +2,7 @@ import json
 
 from allennlp.common.testing import AllenNlpTestCase
 
-from allennlp_server.config_explorer import make_app
+from allennlp_server.tests.config_explorer import make_app
 
 
 class TestConfigExplorer(AllenNlpTestCase):
