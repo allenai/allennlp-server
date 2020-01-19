@@ -76,7 +76,7 @@ def full_name(cla55: Optional[type]) -> str:
         return _remove_prefix(f"{cla55.__module__}.{cla55.__name__}")
 
 
-def json_annotation(cla55: Optional[type]):
+def json_annotation(cla55: Optional[type]) -> JsonDict:
     # Special case to handle None:
     if cla55 is None:
         return {"origin": "?"}
@@ -212,7 +212,7 @@ def _get_config_type(cla55: type) -> Optional[str]:
     return None
 
 
-def _docspec_comments(obj) -> Dict[str, str]:
+def _docspec_comments(obj: Any) -> Dict[str, str]:
     """
     Inspect the docstring and get the comments for each parameter.
     """
@@ -401,7 +401,7 @@ def _render(item: ConfigItem, indent: str = "") -> str:
     return rendered_item
 
 
-BASE_CONFIG: Config = Config(
+BASE_CONFIG = Config(
     [
         ConfigItem(
             name="dataset_reader",
@@ -517,8 +517,8 @@ def configure(full_path: str = "") -> Config:
         return _auto_config(cla55)
 
 
-# ONE OFF LOGIC FOR VOCABULARY
-VOCAB_CONFIG: Config = Config(
+# One-off logic for Vocabulary.
+VOCAB_CONFIG = Config(
     [
         ConfigItem(
             name="directory_path",

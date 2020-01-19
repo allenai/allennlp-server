@@ -233,8 +233,8 @@ def serve(args: argparse.Namespace) -> None:
     )
     CORS(app)
 
-    http_server = WSGIServer((args.host, args.port), app)
     print(f"Model loaded, serving demo on http://{args.host}:{args.port}")
+    http_server = WSGIServer((args.host, args.port), app)
     http_server.serve_forever()
 
 
@@ -799,7 +799,7 @@ def _html(title: str, field_names: List[str]) -> str:
         _SINGLE_INPUT_TEMPLATE.substitute(field_name=field_name) for field_name in field_names
     )
 
-    quoted_field_names = [f"'{field_name}'" for field_name in field_names]
+    quoted_field_names = (f"'{field_name}'" for field_name in field_names)
     quoted_field_list = f"[{','.join(quoted_field_names)}]"
 
     return _PAGE_TEMPLATE.substitute(title=title, css=_CSS, inputs=inputs, qfl=quoted_field_list)

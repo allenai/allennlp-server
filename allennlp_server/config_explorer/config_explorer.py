@@ -4,6 +4,7 @@ It's still experimental.
 """
 
 import logging
+from typing import Any, Dict, Iterable, Optional
 
 from flask import Flask, jsonify, request, Response, send_file
 
@@ -13,16 +14,15 @@ logger = logging.getLogger(__name__)
 
 
 class ServerError(Exception):
-    status_code = 400
-
-    def __init__(self, message, status_code=None, payload=None):
+    def __init__(
+        self, message: str, status_code: int = 400, payload: Optional[Iterable[Any]] = None
+    ) -> None:
         super().__init__(self)
         self.message = message
-        if status_code is not None:
-            self.status_code = status_code
+        self.status_code = status_code
         self.payload = payload
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[Any, Any]:
         error_dict = dict(self.payload or ())
         error_dict["message"] = self.message
         return error_dict
