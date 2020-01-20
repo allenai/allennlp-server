@@ -401,7 +401,7 @@ def _render(item: ConfigItem, indent: str = "") -> str:
     return rendered_item
 
 
-BASE_CONFIG = Config(
+BASE_CONFIG: Config = Config(
     [
         ConfigItem(
             name="dataset_reader",
@@ -518,7 +518,7 @@ def configure(full_path: str = "") -> Config:
 
 
 # One-off logic for Vocabulary.
-VOCAB_CONFIG = Config(
+VOCAB_CONFIG: Config = Config(
     [
         ConfigItem(
             name="directory_path",
