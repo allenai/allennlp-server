@@ -7,17 +7,17 @@ import inspect
 import json
 import re
 from typing import (
+    Any,
+    Dict,
+    Generic,
+    List,
     NamedTuple,
     Optional,
-    Any,
-    List,
-    TypeVar,
-    Generic,
-    Type,
-    Dict,
-    Union,
     Sequence,
     Tuple,
+    Type,
+    TypeVar,
+    Union,
 )
 
 import torch

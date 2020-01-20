@@ -233,8 +233,8 @@ def serve(args: argparse.Namespace) -> None:
     )
     CORS(app)
 
-    print(f"Model loaded, serving demo on http://{args.host}:{args.port}")
     http_server = WSGIServer((args.host, args.port), app)
+    print(f"Model loaded, serving demo on http://{args.host}:{args.port}")
     http_server.serve_forever()
 
 
