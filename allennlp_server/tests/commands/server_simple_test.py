@@ -74,7 +74,9 @@ class TestSimpleServer(AllenNlpTestCase):
             assert "best_span_str" in data
             assert "span_start_logits" in data
 
-    @pytest.mark.skip("test not finished, it needs the plugin functionality to work with subcommands.")
+    @pytest.mark.skip(
+        "test not finished, it needs the plugin functionality to work with subcommands."
+    )
     def test_subcommand(self):
         kebab_args = [
             "run.py",
