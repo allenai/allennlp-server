@@ -12,7 +12,8 @@ exclude =
 
 per-file-ignores =
     # __init__.py files are allowed to have unused imports and lines-too-long
-    allennlp_server/config_explorer/__init__.py:F401
+    allennlp_server/__init__.py:F401
+    allennlp_server/**/__init__.py:F401
 
     # tests don't have to respect
     #  E731: do not assign a lambda expression, use a def

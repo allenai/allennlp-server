@@ -91,7 +91,7 @@ class TestSimpleServer(AllenNlpTestCase):
         sys.argv = kebab_args
         with io.StringIO() as buf, redirect_stdout(buf):
             main()
-            output = buf.getvalue()
+            output = buf.getvalue()  # noqa
 
         # TODO(bryant1410): continue the test when the changes are ready in allennlp.
 
