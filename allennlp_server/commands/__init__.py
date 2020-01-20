@@ -1,0 +1,2 @@
+from allennlp_server.commands.configure import Configure
+from allennlp_server.commands.server_simple import SimpleServer
