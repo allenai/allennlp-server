@@ -11,21 +11,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+    - name: Build the Docker image
+      run: |
+        docker build .
     - name: Setup Python
       uses: actions/setup-python@v1
       with:
         python-version: 3.7
-    - name: Install requirements
+    - name: Install dependencies
       run: |
-        pip install -r requirements.txt
-        pip install pytest pytest-cov flake8 black mypy
+        pip install .
+        pip install -r dev-requirements.txt
     - name: Run tests
       run: |
-        pytest tests/
+        pytest
     - name: Lint
       run: |
         flake8 -v
         black -v --check .
     - name: Type check
       run: |
-        mypy config_explorer --ignore-missing-imports --no-strict-optional --no-site-packages
+        mypy allennlp_server --ignore-missing-imports --no-strict-optional --no-site-packages
+    - name: Check package setup
+      run: |
+        python setup.py check

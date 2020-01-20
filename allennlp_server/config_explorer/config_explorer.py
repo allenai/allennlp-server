@@ -1,56 +1,37 @@
 """
 This is a tiny webapp for generating configuration stubs for your models.
 It's still experimental.
-
-```
-python -m allennlp.service.config_explorer
-```
-
-will launch the app on `localhost:8123` (you can specify a different port if you like).
-
-It can also incorporate your own classes if you use the `include_package` flag:
-
-```
-python -m allennlp.service.config_explorer \
-    --include-package my_library
-```
 """
 
-from typing import Sequence
 import logging
+from typing import Any, Dict, Iterable, Optional
 
-from flask import Flask, request, Response, jsonify, send_file
+from flask import Flask, jsonify, request, Response, send_file
 
-from config_explorer.configuration import configure, choices
-from allennlp.common.util import import_submodules
+from allennlp_server.config_explorer.configuration import choices, configure
 
 logger = logging.getLogger(__name__)
 
 
 class ServerError(Exception):
-    status_code = 400
-
-    def __init__(self, message, status_code=None, payload=None):
-        Exception.__init__(self)
+    def __init__(
+        self, message: str, status_code: int = 400, payload: Optional[Iterable[Any]] = None
+    ) -> None:
+        super().__init__(self)
         self.message = message
-        if status_code is not None:
-            self.status_code = status_code
+        self.status_code = status_code
         self.payload = payload
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[Any, Any]:
         error_dict = dict(self.payload or ())
         error_dict["message"] = self.message
         return error_dict
 
 
-def make_app(include_packages: Sequence[str] = ()) -> Flask:
+def make_app() -> Flask:
     """
     Creates a Flask app that serves up a simple configuration wizard.
     """
-    # Load modules
-    for package_name in include_packages:
-        import_submodules(package_name)
-
     app = Flask(__name__)
 
     @app.errorhandler(ServerError)

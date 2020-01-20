@@ -1,9 +1,8 @@
 import json
-import os
-import sys
 
 from allennlp.common.testing import AllenNlpTestCase
-from config_explorer import make_app
+
+from allennlp_server.config_explorer import make_app
 
 
 class TestConfigExplorer(AllenNlpTestCase):
@@ -32,9 +31,7 @@ class TestConfigExplorer(AllenNlpTestCase):
             "configurable": True,
             "registrable": True,
             "comment": "specify your dataset reader here",
-            "annotation": {
-                "origin": "allennlp.data.dataset_readers.dataset_reader.DatasetReader"
-            },
+            "annotation": {"origin": "allennlp.data.dataset_readers.dataset_reader.DatasetReader"},
         }
 
     def test_choices(self):
@@ -57,9 +54,7 @@ class TestConfigExplorer(AllenNlpTestCase):
         assert items[0]["name"] == "token_indexers"
 
     def test_instantiable_registrable(self):
-        response = self.client.get(
-            "/api/config/?class=allennlp.data.vocabulary.Vocabulary"
-        )
+        response = self.client.get("/api/config/?class=allennlp.data.vocabulary.Vocabulary")
         data = json.loads(response.get_data())
         assert "config" in data
         assert "choices" not in data

@@ -1,0 +1,4 @@
+include LICENSE
+include README.md
+recursive-include allennlp_server *
+recursive-exclude * __pycache__

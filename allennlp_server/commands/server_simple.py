@@ -3,36 +3,56 @@ A `Flask <https://palletsprojects.com/p/flask/>`_ server for serving predictions
 from a single AllenNLP model. It also includes a very, very bare-bones
 web front-end for exploring predictions (or you can provide your own).
 
-For example, if you have your own predictor and model in the `my_stuff` package,
-and you want to use the default HTML, you could run this like
+    $ allennlp serve --help
+    usage: allennlp serve [--help] --archive-path ARCHIVE_PATH --predictor PREDICTOR
+                          [--weights-file WEIGHTS_FILE] [--cuda-device CUDA_DEVICE]
+                          [-o OVERRIDES] [--static-dir STATIC_DIR] [--title TITLE]
+                          [--field-name FIELD_NAME] [-h HOST] [-p PORT]
+                          [--include-package INCLUDE_PACKAGE]
 
-```
-python -m allennlp.service.server_simple \
-    --archive-path allennlp/tests/fixtures/bidaf/serialization/model.tar.gz \
-    --predictor machine-comprehension \
-    --title "Demo of the Machine Comprehension Text Fixture" \
-    --field-name question --field-name passage
-```
+    Run a config explorer for allennlp.
+
+    optional arguments:
+      --help                show this help message and exit
+      --archive-path ARCHIVE_PATH
+                            path to trained archive file
+      --predictor PREDICTOR
+                            name of predictor
+      --weights-file WEIGHTS_FILE
+                            a path that overrides which weights file to use
+      --cuda-device CUDA_DEVICE
+                            id of GPU to use (if any)
+      -o OVERRIDES, --overrides OVERRIDES
+                            a JSON structure used to override the experiment configuration
+      --static-dir STATIC_DIR
+                            serve index.html from this directory
+      --title TITLE
+                            change the default page title (default = AllenNLP Demo)
+      --field-name FIELD_NAME
+                            field names to include in the demo
+      -h HOST, --host HOST  interface to serve the wizard on (default = 127.0.0.1)
+      -p PORT, --port PORT  port to serve the wizard on (default = 8000)
+      --include-package INCLUDE_PACKAGE
+                            additional packages to include
 """
-from typing import List, Callable
 import argparse
 import json
 import logging
 import os
-from string import Template
 import sys
+from string import Template
+from typing import List, Callable
 
+from allennlp.commands import Subcommand
+from allennlp.common import JsonDict
+from allennlp.common.checks import check_for_gpu
+from allennlp.models.archival import load_archive
+from allennlp.predictors import Predictor
 from flask import Flask, request, Response, jsonify, send_file, send_from_directory
 from flask_cors import CORS
 from gevent.pywsgi import WSGIServer
 
-from allennlp.common import JsonDict
-from allennlp.common.checks import check_for_gpu
-from allennlp.common.util import import_submodules
-from allennlp.models.archival import load_archive
-from allennlp.predictors import Predictor
-
-from config_explorer.config_explorer import ServerError
+from allennlp_server.config_explorer.config_explorer import ServerError
 
 logger = logging.getLogger(__name__)
 
@@ -142,81 +162,79 @@ def _get_predictor(args: argparse.Namespace) -> Predictor:
     return Predictor.from_archive(archive, args.predictor)
 
 
-def main(args):
-    # Executing this file with no extra options runs the simple service with the bidaf test fixture
-    # and the machine-comprehension predictor. There's no good reason you'd want
-    # to do this, except possibly to test changes to the stock HTML).
+class SimpleServer(Subcommand):
+    def add_subparser(
+        self, name: str, parser: argparse._SubParsersAction
+    ) -> argparse.ArgumentParser:
+        description = """Serve up a simple model."""
+        subparser = parser.add_parser(
+            name, description=description, help="Serve up a simple model.",
+        )
 
-    parser = argparse.ArgumentParser(description="Serve up a simple model")
+        subparser.add_argument(
+            "--archive-path", type=str, required=True, help="path to trained archive file",
+        )
 
-    parser.add_argument(
-        "--archive-path", type=str, required=True, help="path to trained archive file"
-    )
-    parser.add_argument(
-        "--predictor", type=str, required=True, help="name of predictor"
-    )
-    parser.add_argument(
-        "--weights-file",
-        type=str,
-        help="a path that overrides which weights file to use",
-    )
-    parser.add_argument(
-        "--cuda-device", type=int, default=-1, help="id of GPU to use (if any)"
-    )
-    parser.add_argument(
-        "-o",
-        "--overrides",
-        type=str,
-        default="",
-        help="a JSON structure used to override the experiment configuration",
-    )
-    parser.add_argument(
-        "--static-dir", type=str, help="serve index.html from this directory"
-    )
-    parser.add_argument(
-        "--title",
-        type=str,
-        help="change the default page title",
-        default="AllenNLP Demo",
-    )
-    parser.add_argument(
-        "--field-name",
-        type=str,
-        action="append",
-        help="field names to include in the demo",
-    )
-    parser.add_argument(
-        "--port", type=int, default=8000, help="port to serve the demo on"
-    )
+        subparser.add_argument("--predictor", type=str, required=True, help="name of predictor")
 
-    parser.add_argument(
-        "--include-package",
-        type=str,
-        action="append",
-        default=[],
-        help="additional packages to include",
-    )
+        subparser.add_argument(
+            "--weights-file", type=str, help="a path that overrides which weights file to use",
+        )
 
-    args = parser.parse_args(args)
+        subparser.add_argument(
+            "--cuda-device", type=int, default=-1, help="id of GPU to use (if any)"
+        )
 
-    # Load modules
-    for package_name in args.include_package:
-        import_submodules(package_name)
+        subparser.add_argument(
+            "-o",
+            "--overrides",
+            type=str,
+            default="",
+            help="a JSON structure used to override the experiment configuration",
+        )
 
+        subparser.add_argument(
+            "--static-dir", type=str, help="serve index.html from this directory"
+        )
+
+        subparser.add_argument(
+            "--title", type=str, help="change the default page title", default="AllenNLP Demo",
+        )
+
+        subparser.add_argument(
+            "--field-name",
+            type=str,
+            action="append",
+            dest="field_names",
+            help="field names to include in the demo",
+        )
+
+        subparser.add_argument(
+            "-h", "--host", type=str, default="127.0.0.1", help="interface to serve the wizard on",
+        )
+
+        subparser.add_argument(
+            "-p", "--port", type=int, default=8000, help="port to serve the demo on"
+        )
+
+        subparser.set_defaults(func=serve)
+
+        return subparser
+
+
+def serve(args: argparse.Namespace) -> None:
     predictor = _get_predictor(args)
-
-    field_names = args.field_name
 
     app = make_app(
         predictor=predictor,
-        field_names=field_names,
+        field_names=args.field_names,
         static_dir=args.static_dir,
         title=args.title,
     )
     CORS(app)
 
-    http_server = WSGIServer(("0.0.0.0", args.port), app)
-    print(f"Model loaded, serving demo on port {args.port}")
+    http_server = WSGIServer((args.host, args.port), app)
+    print(f"Model loaded, serving demo on http://{args.host}:{args.port}")
     http_server.serve_forever()
 
 
@@ -302,7 +320,6 @@ _SINGLE_INPUT_TEMPLATE = Template(
         </div>
 """
 )
-
 
 _CSS = """
 body,
@@ -779,17 +796,10 @@ def _html(title: str, field_names: List[str]) -> str:
     specified fields that can render predictions from the configured model.
     """
     inputs = "".join(
-        _SINGLE_INPUT_TEMPLATE.substitute(field_name=field_name)
-        for field_name in field_names
+        _SINGLE_INPUT_TEMPLATE.substitute(field_name=field_name) for field_name in field_names
     )
 
-    quoted_field_names = [f"'{field_name}'" for field_name in field_names]
+    quoted_field_names = (f"'{field_name}'" for field_name in field_names)
     quoted_field_list = f"[{','.join(quoted_field_names)}]"
 
-    return _PAGE_TEMPLATE.substitute(
-        title=title, css=_CSS, inputs=inputs, qfl=quoted_field_list
-    )
-
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
+    return _PAGE_TEMPLATE.substitute(title=title, css=_CSS, inputs=inputs, qfl=quoted_field_list)

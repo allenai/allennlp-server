@@ -1,28 +1,26 @@
 """
 Tools for programmatically generating config files for AllenNLP models.
 """
-from typing import (
-    NamedTuple,
-    Optional,
-    Any,
-    List,
-    TypeVar,
-    Generic,
-    Type,
-    Dict,
-    Union,
-    Sequence,
-    Tuple,
-)
 import collections
-import inspect
 import importlib
+import inspect
 import json
 import re
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 import torch
-from numpydoc.docscrape import NumpyDocString
-
 from allennlp.common import Registrable, JsonDict
 from allennlp.data.dataset_readers import DatasetReader
 from allennlp.data.iterators import DataIterator
@@ -36,6 +34,7 @@ from allennlp.nn.initializers import Initializer, PretrainedModelInitializer
 from allennlp.nn.regularizers import Regularizer
 from allennlp.training.optimizers import Optimizer as AllenNLPOptimizer
 from allennlp.training.trainer import Trainer
+from numpydoc.docscrape import NumpyDocString
 
 
 def _remove_prefix(class_name: str) -> str:
@@ -77,7 +76,7 @@ def full_name(cla55: Optional[type]) -> str:
         return _remove_prefix(f"{cla55.__module__}.{cla55.__name__}")
 
 
-def json_annotation(cla55: Optional[type]):
+def json_annotation(cla55: Optional[type]) -> JsonDict:
     # Special case to handle None:
     if cla55 is None:
         return {"origin": "?"}
@@ -87,11 +86,7 @@ def json_annotation(cla55: Optional[type]):
         return {"origin": "str"}
 
     # Hack because e.g. typing.Union isn't a type.
-    if (
-        isinstance(cla55, type)
-        and issubclass(cla55, Initializer)
-        and cla55 != Initializer
-    ):
+    if isinstance(cla55, type) and issubclass(cla55, Initializer) and cla55 != Initializer:
         init_fn = getattr(cla55(), "_init_function")
         return {"origin": f"{init_fn.__module__}.{init_fn.__name__}"}
 
@@ -147,9 +142,7 @@ class ConfigItem(NamedTuple):
                 json.dumps(self.default_value)
                 json_dict["defaultValue"] = self.default_value
             except TypeError:
-                print(
-                    f"unable to json serialize {self.default_value}, using None instead"
-                )
+                print(f"unable to json serialize {self.default_value}, using None instead")
                 json_dict["defaultValue"] = None
 
         if self.comment:
@@ -219,16 +212,14 @@ def _get_config_type(cla55: type) -> Optional[str]:
     return None
 
 
-def _docspec_comments(obj) -> Dict[str, str]:
+def _docspec_comments(obj: Any) -> Dict[str, str]:
     """
     Inspect the docstring and get the comments for each parameter.
     """
     # Sometimes our docstring is on the class, and sometimes it's on the initializer,
     # so we've got to check both.
     class_docstring = getattr(obj, "__doc__", None)
-    init_docstring = (
-        getattr(obj.__init__, "__doc__", None) if hasattr(obj, "__init__") else None
-    )
+    init_docstring = getattr(obj.__init__, "__doc__", None) if hasattr(obj, "__init__") else None
 
     docstring = class_docstring or init_docstring or ""
 
@@ -301,10 +292,7 @@ def _auto_config(cla55: Type[T]) -> Config[T]:
             continue
 
         # Don't include params for an Optimizer
-        if (
-            torch.optim.Optimizer in getattr(cla55, "__bases__", ())
-            and name == "params"
-        ):
+        if torch.optim.Optimizer in getattr(cla55, "__bases__", ()) and name == "params":
             continue
 
         # Don't include datasets in the trainer
@@ -529,7 +517,7 @@ def configure(full_path: str = "") -> Config:
         return _auto_config(cla55)
 
 
-# ONE OFF LOGIC FOR VOCABULARY
+# One-off logic for Vocabulary.
 VOCAB_CONFIG: Config = Config(
     [
         ConfigItem(

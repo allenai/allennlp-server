@@ -1,23 +1,35 @@
+# AllenNLP Config Explorer and Simple Server
 
+This repo contains a config explorer for interactively building AllenNLP configuration files, as well as a simple demo server for serving a model.
 
-## AllenNLP Config Explorer and Simple Server
+## Installation
 
-This contains a config explorer for interactively building allennlp configuration files, as well as a simple demo server for serving a model.
+### Installing from source
 
-## Usage
+You can also install AllenNLP Server by cloning our git repository:
 
+```bash
+git clone https://github.com/allenai/allennlp-server
 ```
-# Install the requirements
-pip install -r requirements.txt
-# Run the webapp to view the configuration demo
-python configure.py
 
-python server_simple.py --help
-usage: server_simple.py [-h] --archive-path ARCHIVE_PATH --predictor PREDICTOR
-                        [--weights-file WEIGHTS_FILE]
-                        [--cuda-device CUDA_DEVICE] [-o OVERRIDES]
-                        [--static-dir STATIC_DIR] [--title TITLE]
-                        [--field-name FIELD_NAME] [--port PORT]
-                        [--include-package INCLUDE_PACKAGE]
+Create a Python 3.7 virtual environment, and install AllenNLP Server in `editable` mode by running:
 
+```bash
+pip install --editable .
+```
+
+## Running AllenNLP Server
+
+AllenNLP Server is a plugin for AllenNLP, so new subcommands will be added to it.
+
+To run the configuration explorer, see:
+
+```bash
+allennlp configure --help
+```
+
+To run the simple demo server, see:
+
+```bash
+allennlp server --help
 ```
