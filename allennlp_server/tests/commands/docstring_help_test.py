@@ -1,3 +1,6 @@
+# Originally copied from `allennlp.tests.commands.docstring_help_test`.
+# TODO: refactor its code so it can be used from here and avoid copy-pasting code.
+
 import argparse
 import importlib
 import io
