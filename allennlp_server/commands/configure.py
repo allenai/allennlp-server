@@ -2,13 +2,14 @@
 The ``configure`` subcommand launches a webapp that helps you generate an AllenNLP configuration file.
 
     $ allennlp configure --help
-    usage: allennlp configure [--help] [-h HOST] [-p PORT] [--include-package INCLUDE_PACKAGE]
+    usage: allennlp configure [-h] [--host HOST] [-p PORT]
+                              [--include-package INCLUDE_PACKAGE]
 
     Run a config explorer for allennlp.
 
     optional arguments:
-      --help                show this help message and exit
-      -h HOST, --host HOST  interface to serve the wizard on (default = 127.0.0.1)
+      -h, --help            show this help message and exit
+      --host HOST           interface to serve the wizard on (default = 127.0.0.1)
       -p PORT, --port PORT  port to serve the wizard on (default = 8123)
       --include-package INCLUDE_PACKAGE
                             additional packages to include
@@ -23,17 +24,16 @@ from gevent.pywsgi import WSGIServer
 from allennlp_server.config_explorer import make_app
 
 
+@Subcommand.register("configure")
 class Configure(Subcommand):
-    def add_subparser(
-        self, name: str, parser: argparse._SubParsersAction
-    ) -> argparse.ArgumentParser:
+    def add_subparser(self, parser: argparse._SubParsersAction) -> argparse.ArgumentParser:
         description = """Run a config explorer for allennlp."""
         subparser = parser.add_parser(
-            name, description=description, help="Run a config explorer for allennlp.",
+            self.name, description=description, help="Run a config explorer for allennlp.",
         )
 
         subparser.add_argument(
-            "-h", "--host", type=str, default="127.0.0.1", help="interface to serve the wizard on",
+            "--host", type=str, default="127.0.0.1", help="interface to serve the wizard on",
         )
 
         subparser.add_argument(

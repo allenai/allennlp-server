@@ -4,16 +4,17 @@ from a single AllenNLP model. It also includes a very, very bare-bones
 web front-end for exploring predictions (or you can provide your own).
 
     $ allennlp serve --help
-    usage: allennlp serve [--help] --archive-path ARCHIVE_PATH --predictor PREDICTOR
-                          [--weights-file WEIGHTS_FILE] [--cuda-device CUDA_DEVICE]
-                          [-o OVERRIDES] [--static-dir STATIC_DIR] [--title TITLE]
-                          [--field-name FIELD_NAME] [-h HOST] [-p PORT]
+    usage: allennlp serve [-h] --archive-path ARCHIVE_PATH --predictor PREDICTOR
+                          [--weights-file WEIGHTS_FILE]
+                          [--cuda-device CUDA_DEVICE] [-o OVERRIDES]
+                          [--static-dir STATIC_DIR] [--title TITLE]
+                          [--field-name FIELD_NAME] [--host HOST] [-p PORT]
                           [--include-package INCLUDE_PACKAGE]
 
-    Run a config explorer for allennlp.
+    Serve up a simple model.
 
     optional arguments:
-      --help                show this help message and exit
+      -h, --help            show this help message and exit
       --archive-path ARCHIVE_PATH
                             path to trained archive file
       --predictor PREDICTOR
@@ -21,17 +22,18 @@ web front-end for exploring predictions (or you can provide your own).
       --weights-file WEIGHTS_FILE
                             a path that overrides which weights file to use
       --cuda-device CUDA_DEVICE
-                            id of GPU to use (if any)
+                            id of GPU to use (if any) (default = -1)
       -o OVERRIDES, --overrides OVERRIDES
-                            a JSON structure used to override the experiment configuration
+                            a JSON structure used to override the experiment
+                            configuration
       --static-dir STATIC_DIR
                             serve index.html from this directory
-      --title TITLE
-                            change the default page title (default = AllenNLP Demo)
+      --title TITLE         change the default page title (default = AllenNLP
+                            Demo)
       --field-name FIELD_NAME
                             field names to include in the demo
-      -h HOST, --host HOST  interface to serve the wizard on (default = 127.0.0.1)
-      -p PORT, --port PORT  port to serve the wizard on (default = 8000)
+      --host HOST           interface to serve the demo on (default = 127.0.0.1)
+      -p PORT, --port PORT  port to serve the demo on (default = 8000)
       --include-package INCLUDE_PACKAGE
                             additional packages to include
 """
@@ -162,13 +164,12 @@ def _get_predictor(args: argparse.Namespace) -> Predictor:
     return Predictor.from_archive(archive, args.predictor)
 
 
+@Subcommand.register("serve")
 class SimpleServer(Subcommand):
-    def add_subparser(
-        self, name: str, parser: argparse._SubParsersAction
-    ) -> argparse.ArgumentParser:
+    def add_subparser(self, parser: argparse._SubParsersAction) -> argparse.ArgumentParser:
         description = """Serve up a simple model."""
         subparser = parser.add_parser(
-            name, description=description, help="Serve up a simple model.",
+            self.name, description=description, help="Serve up a simple model.",
         )
 
         subparser.add_argument(
@@ -206,11 +207,12 @@ class SimpleServer(Subcommand):
             type=str,
             action="append",
             dest="field_names",
+            metavar="FIELD_NAME",
             help="field names to include in the demo",
         )
 
         subparser.add_argument(
-            "-h", "--host", type=str, default="127.0.0.1", help="interface to serve the wizard on",
+            "--host", type=str, default="127.0.0.1", help="interface to serve the demo on",
         )
 
         subparser.add_argument(

@@ -6,7 +6,6 @@ import sys
 from contextlib import redirect_stdout
 
 import flask.testing
-import pytest
 from allennlp.commands import main
 from allennlp.common.testing import AllenNlpTestCase
 from allennlp.common.util import JsonDict
@@ -32,7 +31,6 @@ class TestSimpleServer(AllenNlpTestCase):
     def setUp(self):
         super().setUp()
 
-        print(os.getcwd())
         importlib.import_module("allennlp_rc.models")
         archive = load_archive("allennlp_server/tests/fixtures/bidaf/model.tar.gz")
         self.bidaf_predictor = Predictor.from_archive(
@@ -74,26 +72,17 @@ class TestSimpleServer(AllenNlpTestCase):
             assert "best_span_str" in data
             assert "span_start_logits" in data
 
-    @pytest.mark.skip(
-        "test not finished, it needs the plugin functionality to work with subcommands."
-    )
-    def test_subcommand(self):
-        kebab_args = [
-            "run.py",
-            "serve",
-            "--archive-path",
-            "allennlp_server/tests/fixtures/bidaf/model.tar.gz",
-            "--field-name",
-            "passage",
-            "--field-name",
-            "question",
-        ]
-        sys.argv = kebab_args
+    def test_subcommand_plugin_is_available(self):
+        # Test originally copied from
+        # `allennlp.tests.commands.main_test.TestMain.test_subcommand_plugin_is_available`.
+
+        sys.argv = ["allennlp"]
+
         with io.StringIO() as buf, redirect_stdout(buf):
             main()
-            output = buf.getvalue()  # noqa
+            output = buf.getvalue()
 
-        # TODO(bryant1410): continue the test when the changes are ready in allennlp.
+        self.assertIn("    serve", output)
 
     def test_sanitizer(self):
         def sanitize(result: JsonDict) -> JsonDict:

@@ -31,5 +31,5 @@ allennlp configure --help
 To run the simple demo server, see:
 
 ```bash
-allennlp server --help
+allennlp serve --help
 ```
