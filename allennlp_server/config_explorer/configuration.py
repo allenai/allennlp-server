@@ -100,7 +100,7 @@ def json_annotation(cla55: Optional[type]) -> JsonDict:
         return {"origin": "..."}
     elif cla55 == Any:
         return {"origin": "*"}
-    elif hasattr(cla55, '__name__'):  # Some classes don't define this attribute.
+    elif hasattr(cla55, "__name__"):  # Some classes don't define this attribute.
         return {"origin": _remove_prefix(f"{cla55.__module__}.{cla55.__name__}")}
     else:
         return {"origin": str(cla55)}
