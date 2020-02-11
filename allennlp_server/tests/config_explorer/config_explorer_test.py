@@ -36,7 +36,8 @@ class TestConfigExplorer(AllenNlpTestCase):
 
     def test_choices(self):
         response = self.client.get(
-            "/api/config/?class=allennlp.data.dataset_readers.dataset_reader.DatasetReader&get_choices=true"
+            "/api/config/?class=allennlp.data.dataset_readers.dataset_reader.DatasetReader"
+            "&get_choices=true"
         )
         data = json.loads(response.get_data())
 
@@ -79,7 +80,9 @@ class TestConfigExplorer(AllenNlpTestCase):
         assert "choices" not in data
 
     def test_torch_class(self):
-        response = self.client.get("/api/config/?class=torch.optim.rmsprop.RMSprop")
+        response = self.client.get(
+            "/api/config/?class=allennlp.training.optimizers.RmsPropOptimizer"
+        )
         data = json.loads(response.get_data())
         config = data["config"]
         items = config["items"]
@@ -107,10 +110,10 @@ class TestConfigExplorer(AllenNlpTestCase):
         )
         data = json.loads(response.get_data())
 
-        assert "torch.nn.init.constant_" in data["choices"]
-        assert "allennlp.nn.initializers.block_orthogonal" in data["choices"]
+        assert "allennlp.nn.initializers.ConstantInitializer" in data["choices"]
+        assert "allennlp.nn.initializers.BlockOrthogonalInitializer" in data["choices"]
 
-        response = self.client.get("/api/config/?class=torch.nn.init.uniform_")
+        response = self.client.get("/api/config/?class=allennlp.nn.initializers.UniformInitializer")
         data = json.loads(response.get_data())
         config = data["config"]
         items = config["items"]

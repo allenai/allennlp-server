@@ -26,11 +26,8 @@ from allennlp.data.dataset_readers import DatasetReader
 from allennlp.data.iterators import DataIterator
 from allennlp.data.vocabulary import DEFAULT_NON_PADDED_NAMESPACES, Vocabulary
 from allennlp.models.model import Model
-from allennlp.modules.seq2seq_encoders import PytorchSeq2SeqWrapper
-from allennlp.modules.seq2vec_encoders import PytorchSeq2VecWrapper
 from allennlp.modules.token_embedders import Embedding
 from allennlp.nn.activations import Activation
-from allennlp.nn.initializers import Initializer, PretrainedModelInitializer
 from allennlp.nn.regularizers import Regularizer
 from allennlp.training.optimizers import Optimizer as AllenNLPOptimizer
 from allennlp.training.trainer import Trainer
@@ -49,13 +46,6 @@ def full_name(cla55: Optional[type]) -> str:
     # Special case to handle None:
     if cla55 is None:
         return "?"
-
-    if issubclass(cla55, Initializer) and cla55 not in [
-        Initializer,
-        PretrainedModelInitializer,
-    ]:
-        init_fn = getattr(cla55(), "_init_function")
-        return f"{init_fn.__module__}.{init_fn.__name__}"
 
     origin = getattr(cla55, "__origin__", None)
     args = getattr(cla55, "__args__", ())
@@ -85,11 +75,6 @@ def json_annotation(cla55: Optional[type]) -> JsonDict:
     if cla55 == Activation:
         return {"origin": "str"}
 
-    # Hack because e.g. typing.Union isn't a type.
-    if isinstance(cla55, type) and issubclass(cla55, Initializer) and cla55 != Initializer:
-        init_fn = getattr(cla55(), "_init_function")
-        return {"origin": f"{init_fn.__module__}.{init_fn.__name__}"}
-
     origin = getattr(cla55, "__origin__", None)
     args = getattr(cla55, "__args__", ())
 
@@ -113,8 +98,12 @@ def json_annotation(cla55: Optional[type]) -> JsonDict:
             return {"origin": "Union", "args": [json_annotation(arg) for arg in args]}
     elif cla55 == Ellipsis:
         return {"origin": "..."}
-    else:
+    elif cla55 == Any:
+        return {"origin": "*"}
+    elif hasattr(cla55, '__name__'):  # Some classes don't define this attribute.
         return {"origin": _remove_prefix(f"{cla55.__module__}.{cla55.__name__}")}
+    else:
+        return {"origin": str(cla55)}
 
 
 class ConfigItem(NamedTuple):
@@ -475,8 +464,7 @@ BASE_CONFIG: Config = Config(
 
 def _valid_choices(cla55: type) -> Dict[str, str]:
     """
-    Return a mapping {registered_name -> subclass_name}
-    for the registered subclasses of `cla55`.
+    Return a mapping {registered_name -> subclass_name} for the registered subclasses of `cla55`.
     """
     valid_choices: Dict[str, str] = {}
 
@@ -484,10 +472,6 @@ def _valid_choices(cla55: type) -> Dict[str, str]:
         raise ValueError(f"{cla55} is not a known Registrable class")
 
     for name, (subclass, _) in Registrable._registry[cla55].items():
-        # These wrapper classes need special treatment
-        if isinstance(subclass, (PytorchSeq2SeqWrapper, PytorchSeq2VecWrapper)):
-            subclass = subclass._module
-
         valid_choices[name] = full_name(subclass)
 
     return valid_choices
