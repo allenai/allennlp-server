@@ -21,13 +21,13 @@ from typing import (
 )
 
 import torch
-from allennlp.common import Registrable, JsonDict
+from allennlp.common import JsonDict, Registrable
 from allennlp.data.dataset_readers import DatasetReader
 from allennlp.data.iterators import DataIterator
-from allennlp.data.vocabulary import Vocabulary, DEFAULT_NON_PADDED_NAMESPACES
+from allennlp.data.vocabulary import DEFAULT_NON_PADDED_NAMESPACES, Vocabulary
 from allennlp.models.model import Model
-from allennlp.modules.seq2seq_encoders import _Seq2SeqWrapper
-from allennlp.modules.seq2vec_encoders import _Seq2VecWrapper
+from allennlp.modules.seq2seq_encoders import PytorchSeq2SeqWrapper
+from allennlp.modules.seq2vec_encoders import PytorchSeq2VecWrapper
 from allennlp.modules.token_embedders import Embedding
 from allennlp.nn.activations import Activation
 from allennlp.nn.initializers import Initializer, PretrainedModelInitializer
@@ -485,8 +485,8 @@ def _valid_choices(cla55: type) -> Dict[str, str]:
 
     for name, (subclass, _) in Registrable._registry[cla55].items():
         # These wrapper classes need special treatment
-        if isinstance(subclass, (_Seq2SeqWrapper, _Seq2VecWrapper)):
-            subclass = subclass._module_class
+        if isinstance(subclass, (PytorchSeq2SeqWrapper, PytorchSeq2VecWrapper)):
+            subclass = subclass._module
 
         valid_choices[name] = full_name(subclass)
 
