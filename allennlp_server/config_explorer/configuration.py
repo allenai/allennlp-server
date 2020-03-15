@@ -22,15 +22,14 @@ from typing import (
 
 import torch
 from allennlp.common import JsonDict, Registrable
-from allennlp.data.dataset_readers import DatasetReader
-from allennlp.data.iterators import DataIterator
-from allennlp.data.vocabulary import DEFAULT_NON_PADDED_NAMESPACES, Vocabulary
-from allennlp.models.model import Model
-from allennlp.modules.token_embedders import Embedding
-from allennlp.nn.activations import Activation
+from allennlp.data import DataLoader, DatasetReader, Vocabulary
+from allennlp.data.vocabulary import DEFAULT_NON_PADDED_NAMESPACES
+from allennlp.models import Model
+from allennlp.modules import Embedding
+from allennlp.nn import Activation
 from allennlp.nn.regularizers import Regularizer
+from allennlp.training import Trainer
 from allennlp.training.optimizers import Optimizer as AllenNLPOptimizer
-from allennlp.training.trainer import Trainer
 from numpydoc.docscrape import NumpyDocString
 
 
@@ -276,8 +275,8 @@ def _auto_config(cla55: Type[T]) -> Config[T]:
         if annotation == Model:
             continue
 
-        # Don't include DataIterator, the only place you'd specify that is top-level.
-        if annotation == DataIterator:
+        # Don't include DataLoader, the only place you'd specify that is top-level.
+        if annotation == DataLoader:
             continue
 
         # Don't include params for an Optimizer
@@ -435,8 +434,8 @@ BASE_CONFIG: Config = Config(
             comment="specify your model here",
         ),
         ConfigItem(
-            name="iterator",
-            annotation=DataIterator,
+            name="data_loader",
+            annotation=DataLoader,
             default_value=_NO_DEFAULT,
             comment="specify your data iterator here",
         ),

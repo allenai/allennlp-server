@@ -45,7 +45,7 @@ class TestConfigExplorer(AllenNlpTestCase):
 
     def test_subclass(self):
         response = self.client.get(
-            "/api/config/?class=allennlp.data.dataset_readers.semantic_role_labeling.SrlReader"
+            "/api/config/?class=allennlp_models.syntax.srl.SrlReader"
         )
         data = json.loads(response.get_data())
 

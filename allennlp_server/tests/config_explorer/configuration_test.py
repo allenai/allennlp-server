@@ -26,7 +26,7 @@ class TestConfiguration(AllenNlpTestCase):
         assert "allennlp.data.dataset_readers.snli.SnliReader" in config
 
     def test_specific_subclass(self):
-        config = configure("allennlp.data.dataset_readers.semantic_role_labeling.SrlReader")
+        config = configure("allennlp_models.syntax.srl.SrlReader")
         assert isinstance(config, Config)
 
         items = {item.name: item for item in config.items}
