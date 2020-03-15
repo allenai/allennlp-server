@@ -44,9 +44,7 @@ class TestConfigExplorer(AllenNlpTestCase):
         assert "allennlp.data.dataset_readers.snli.SnliReader" in data["choices"]
 
     def test_subclass(self):
-        response = self.client.get(
-            "/api/config/?class=allennlp_models.syntax.srl.SrlReader"
-        )
+        response = self.client.get("/api/config/?class=allennlp_models.syntax.srl.SrlReader")
         data = json.loads(response.get_data())
 
         config = data["config"]
