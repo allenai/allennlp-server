@@ -1,6 +1,6 @@
 # AllenNLP Config Explorer and Simple Server
 
-This repo contains a config explorer for interactively building AllenNLP configuration files, as well as a simple demo server for serving a model.
+This repo contains a config explorer for interactively building AllenNLP configuration files, as well as a simple demo server for serving a model.  To file an issue, please open a ticket on https://github.com/allenai/allennlp and tag it with "Server".
 
 ## Installation
 
