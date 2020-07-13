@@ -46,20 +46,11 @@ class TestDocstringHelp(AllenNlpTestCase):
                 subcommand = match.group(2)
                 actual_output = _subcommand_help_output(subcommand)
 
-                self.assertEqual(
-                    expected_output,
-                    actual_output,
+                assert expected_output == actual_output, (
                     f"The documentation for the subcommand usage"
                     f" in the module {module_info.name}"
                     f" does not match the output of running"
                     f" `{str_call_subcommand_help}`."
                     f" Please update the docstring to match the"
-                    f" output.",
-                )
-            else:
-                self.assertIn(
-                    module_info.name,
-                    set(),  # Exceptions can be added here.
-                    f"The documentation for the subcommand usage was not found within the docstring of"
-                    f" the module {module_info.name}",
+                    f" output."
                 )
