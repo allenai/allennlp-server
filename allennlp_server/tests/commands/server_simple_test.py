@@ -28,17 +28,16 @@ PAYLOAD = {
 
 
 class TestSimpleServer(AllenNlpTestCase):
-    def setUp(self):
-        super().setUp()
-
-        importlib.import_module("allennlp_models.rc.bidaf")
+    def setup_method(self):
+        super().setup_method()
+        importlib.import_module("allennlp_models.rc")
         archive = load_archive("allennlp_server/tests/fixtures/bidaf/model.tar.gz")
         self.bidaf_predictor = Predictor.from_archive(
-            archive, "allennlp_models.rc.bidaf.ReadingComprehensionPredictor"
+            archive, "allennlp_models.rc.ReadingComprehensionPredictor"
         )
 
-    def tearDown(self):
-        super().tearDown()
+    def teardown_method(self):
+        super().teardown_method()
         try:
             os.remove("access.log")
             os.remove("error.log")
@@ -82,7 +81,7 @@ class TestSimpleServer(AllenNlpTestCase):
             main()
             output = buf.getvalue()
 
-        self.assertIn("    serve", output)
+        assert "    serve" in output
 
     def test_sanitizer(self):
         def sanitize(result: JsonDict) -> JsonDict:

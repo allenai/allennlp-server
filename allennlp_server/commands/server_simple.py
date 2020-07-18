@@ -43,7 +43,7 @@ import logging
 import os
 import sys
 from string import Template
-from typing import List, Callable
+from typing import List, Callable, Optional, Any, Iterable, Dict
 
 from allennlp.commands import Subcommand
 from allennlp.common import JsonDict
@@ -54,9 +54,23 @@ from flask import Flask, request, Response, jsonify, send_file, send_from_direct
 from flask_cors import CORS
 from gevent.pywsgi import WSGIServer
 
-from allennlp_server.config_explorer.config_explorer import ServerError
 
 logger = logging.getLogger(__name__)
+
+
+class ServerError(Exception):
+    def __init__(
+        self, message: str, status_code: int = 400, payload: Optional[Iterable[Any]] = None
+    ) -> None:
+        super().__init__(self)
+        self.message = message
+        self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self) -> Dict[Any, Any]:
+        error_dict = dict(self.payload or ())
+        error_dict["message"] = self.message
+        return error_dict
 
 
 def make_app(
