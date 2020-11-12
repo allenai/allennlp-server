@@ -72,7 +72,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build allennlp-server .
+        docker build -t allennlp-server .
 
     - name: Test Docker image
       run: |
