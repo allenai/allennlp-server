@@ -10,7 +10,7 @@ You can install AllenNLP Server by cloning our git repository:
 git clone https://github.com/allenai/allennlp-server
 ```
 
-Create a Python 3.7 virtual environment, and install AllenNLP Server in `editable` mode by running:
+Create a Python 3.8 virtual environment, and install AllenNLP Server in `editable` mode by running:
 
 ```bash
 pip install --editable .

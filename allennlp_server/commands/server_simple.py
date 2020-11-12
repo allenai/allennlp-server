@@ -122,7 +122,7 @@ def make_app(
         if static_dir is not None:
             return send_file(os.path.join(static_dir, "index.html"))
         else:
-            html = _html(title, field_names)
+            html = _html(title, field_names or [])
             return Response(response=html, status=200)
 
     @app.route("/predict", methods=["POST", "OPTIONS"])
@@ -183,17 +183,24 @@ class SimpleServer(Subcommand):
     def add_subparser(self, parser: argparse._SubParsersAction) -> argparse.ArgumentParser:
         description = """Serve up a simple model."""
         subparser = parser.add_parser(
-            self.name, description=description, help="Serve up a simple model.",
+            self.name,
+            description=description,
+            help="Serve up a simple model.",
         )
 
         subparser.add_argument(
-            "--archive-path", type=str, required=True, help="path to trained archive file",
+            "--archive-path",
+            type=str,
+            required=True,
+            help="path to trained archive file",
         )
 
         subparser.add_argument("--predictor", type=str, required=True, help="name of predictor")
 
         subparser.add_argument(
-            "--weights-file", type=str, help="a path that overrides which weights file to use",
+            "--weights-file",
+            type=str,
+            help="a path that overrides which weights file to use",
         )
 
         subparser.add_argument(
@@ -213,7 +220,10 @@ class SimpleServer(Subcommand):
         )
 
         subparser.add_argument(
-            "--title", type=str, help="change the default page title", default="AllenNLP Demo",
+            "--title",
+            type=str,
+            help="change the default page title",
+            default="AllenNLP Demo",
         )
 
         subparser.add_argument(
@@ -226,7 +236,10 @@ class SimpleServer(Subcommand):
         )
 
         subparser.add_argument(
-            "--host", type=str, default="127.0.0.1", help="interface to serve the demo on",
+            "--host",
+            type=str,
+            default="127.0.0.1",
+            help="interface to serve the demo on",
         )
 
         subparser.add_argument(
