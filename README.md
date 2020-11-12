@@ -1,4 +1,4 @@
-# AllenNLP Config Explorer and Simple Server
+# AllenNLP Simple Server
 
 This repo contains a simple demo server for serving a model. To file an issue, please open a ticket on https://github.com/allenai/allennlp and tag it with "Server".
 
