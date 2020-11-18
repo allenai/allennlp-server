@@ -31,7 +31,7 @@ class TestSimpleServer(AllenNlpTestCase):
     def setup_method(self):
         super().setup_method()
         importlib.import_module("allennlp_models.rc")
-        archive = load_archive("allennlp_server/tests/fixtures/bidaf/model.tar.gz")
+        archive = load_archive("tests/fixtures/bidaf/model.tar.gz")
         self.bidaf_predictor = Predictor.from_archive(
             archive, "allennlp_models.rc.ReadingComprehensionPredictor"
         )
@@ -88,7 +88,9 @@ class TestSimpleServer(AllenNlpTestCase):
             return {key: value for key, value in result.items() if key.startswith("best_span")}
 
         app = make_app(
-            predictor=self.bidaf_predictor, field_names=["passage", "question"], sanitizer=sanitize,
+            predictor=self.bidaf_predictor,
+            field_names=["passage", "question"],
+            sanitizer=sanitize,
         )
         app.testing = True
         client = app.test_client()

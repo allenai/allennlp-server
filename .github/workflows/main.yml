@@ -6,32 +6,74 @@ on:
   push:
     branches:
     - master
+  schedule:
+  - cron: '17 11 * * 1,2,3,4,5'  # early morning Monday - Friday
+
 jobs:
-  build:
+  checks:
+    name: Checks
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Build the Docker image
-      run: |
-        docker build .
+    - uses: actions/checkout@v2
+
     - name: Setup Python
       uses: actions/setup-python@v1
       with:
-        python-version: 3.7
+        python-version: 3.8
+
+    - uses: actions/cache@v2
+      with:
+        path: ${{ env.pythonLocation }}
+        key: ${{ runner.os }}-pydeps-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('dev-requirements.txt') }}
+
     - name: Install dependencies
       run: |
-        pip install .
-        pip install -r dev-requirements.txt
-    - name: Run tests
+        pip install --upgrade --upgrade-strategy eager -r dev-requirements.txt -e .
+
+    - name: Debug info
       run: |
-        pytest
+        pip freeze
+
+    - name: Format
+      if: always()
+      run: |
+        black --check .
+
     - name: Lint
+      if: always()
       run: |
-        flake8 -v
-        black -v --check .
+        flake8
+
     - name: Type check
+      if: always()
       run: |
-        mypy allennlp_server --ignore-missing-imports --no-strict-optional --no-site-packages
+        mypy . --ignore-missing-imports --no-site-packages
+
     - name: Check package setup
+      if: always()
       run: |
         python setup.py check
+
+    - name: Run tests
+      if: always()
+      run: |
+        pytest -v
+
+    - name: Clean up
+      if: always()
+      run: |
+        pip uninstall -y allennlp-server
+
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build Docker image
+      run: |
+        docker build -t allennlp-server .
+
+    - name: Test Docker image
+      run: |
+        docker run --rm -p 8000:8000 allennlp-server
