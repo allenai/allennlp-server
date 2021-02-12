@@ -19,8 +19,6 @@ web front-end for exploring predictions (or you can provide your own).
                             path to trained archive file
       --predictor PREDICTOR
                             name of predictor
-      --weights-file WEIGHTS_FILE
-                            a path that overrides which weights file to use
       --cuda-device CUDA_DEVICE
                             id of GPU to use (if any) (default = -1)
       -o OVERRIDES, --overrides OVERRIDES
@@ -48,7 +46,6 @@ from typing import List, Callable, Optional, Any, Iterable, Dict
 from allennlp.commands import Subcommand
 from allennlp.common import JsonDict
 from allennlp.common.checks import check_for_gpu
-from allennlp.models.archival import load_archive
 from allennlp.predictors import Predictor
 from flask import Flask, request, Response, jsonify, send_file, send_from_directory
 from flask_cors import CORS
@@ -168,14 +165,12 @@ def make_app(
 
 def _get_predictor(args: argparse.Namespace) -> Predictor:
     check_for_gpu(args.cuda_device)
-    archive = load_archive(
+    return Predictor.from_path(
         args.archive_path,
-        weights_file=args.weights_file,
+        predictor_name=args.predictor,
         cuda_device=args.cuda_device,
         overrides=args.overrides,
     )
-
-    return Predictor.from_archive(archive, args.predictor)
 
 
 @Subcommand.register("serve")
@@ -195,13 +190,7 @@ class SimpleServer(Subcommand):
             help="path to trained archive file",
         )
 
-        subparser.add_argument("--predictor", type=str, required=True, help="name of predictor")
-
-        subparser.add_argument(
-            "--weights-file",
-            type=str,
-            help="a path that overrides which weights file to use",
-        )
+        subparser.add_argument("--predictor", type=str, help="registered name of predictor")
 
         subparser.add_argument(
             "--cuda-device", type=int, default=-1, help="id of GPU to use (if any)"
