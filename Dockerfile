@@ -1,7 +1,4 @@
-# This Dockerfile creates an environment suitable for downstream usage of AllenNLP.
-# It creates an environment that includes a pip installation of allennlp-server.
-
-FROM allennlp/allennlp:latest
+FROM python:3.8
 
 WORKDIR /stage/allennlp-server
 
@@ -15,10 +12,10 @@ RUN pip install -e .
 # only be a conditional dependency for Python < 3.7.
 # This has been fixed on PyTorch master branch, so we should be able to
 # remove this check with the next PyTorch release.
-RUN pip uninstall -y dataclasses
+# RUN pip uninstall -y dataclasses
 
+# Now copy source files and re-install the package without dependencies.
 COPY allennlp_server/ allennlp_server/
-
 RUN pip install --no-deps -e .
 
 EXPOSE 8000
