@@ -76,4 +76,4 @@ jobs:
 
     - name: Test Docker image
       run: |
-        docker run --rm -p 8000:8000 allennlp-server
+        docker run --rm -p 8000:8000 allennlp-server --help

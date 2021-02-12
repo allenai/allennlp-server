@@ -19,3 +19,5 @@ COPY allennlp_server/ allennlp_server/
 RUN pip install --no-deps -e .
 
 EXPOSE 8000
+
+ENTRYPOINT ["allennlp", "serve"]
