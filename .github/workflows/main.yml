@@ -24,7 +24,7 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: ${{ env.pythonLocation }}
-        key: ${{ runner.os }}-pydeps-${{ env.pythonLocation }}-${{ hashFiles('setup.cfg') }}-${{ hashFiles('dev-requirements.txt') }}
+        key: ${{ runner.os }}-pydeps-${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('dev-requirements.txt') }}
 
     - name: Install dependencies
       run: |
@@ -59,10 +59,127 @@ jobs:
       run: |
         pytest -v
 
+    - name: Upload coverage to Codecov
+      if: matrix.python == '3.7' && github.repository == 'allenai/allennlp-server' && (github.event_name == 'push' || github.event_name == 'pull_request')
+      uses: codecov/codecov-action@v1
+      with:
+        file: ./coverage.xml
+        # Ignore codecov failures as the codecov server is not
+        # very reliable but we don't want to report a failure
+        # in the github UI just because the coverage report failed to
+        # be published.
+        fail_ci_if_error: false
+
     - name: Clean up
       if: always()
       run: |
         pip uninstall -y allennlp-server
+
+  build_package:
+    name: Build package
+    if: github.repository == 'allenai/allennlp-server'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
+      - name: Check and set nightly version
+        if: github.event_name == 'schedule'
+        run: |
+          # The get_version.py script requires the 'requests' package.
+          pip install requests
+          LATEST=$(scripts/get_version.py latest)
+          CURRENT=$(scripts/get_version.py current)
+          # Verify that current version is ahead of the last release.
+          if [ "$CURRENT" == "$LATEST" ]; then
+              echo "Current version needs to be ahead of latest release in order to build nightly release";
+              exit 1;
+          fi
+          echo "ALLENNLP_SERVER_VERSION_SUFFIX=.dev$(date -u +%Y%m%d)" >> $GITHUB_ENV
+
+      - name: Check version and release tag match
+        if: github.event_name == 'release'
+        run: |
+          # Remove 'refs/tags/' to get the actual tag from the release.
+          TAG=${GITHUB_REF#refs/tags/};
+          VERSION=$(scripts/get_version.py current)
+          if [ "$TAG" != "$VERSION" ]; then
+              echo "Bad tag or version. Tag $TAG does not match $VERSION";
+              exit 1;
+          fi
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ runner.os }}-pydeps-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}-${{ hashFiles('dev-requirements.txt') }}
+
+      - name: Install requirements
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip uninstall -y allennlp
+          pip install -e .
+          pip install -r dev-requirements.txt
+
+      - name: Show pip freeze
+        run: |
+          pip freeze
+
+      - name: Build Package
+        run: |
+          python setup.py bdist_wheel sdist
+
+      - name: Save package
+        uses: actions/upload-artifact@v1
+        with:
+          name: server-package
+          path: dist
+
+  test_package:
+    name: Test Package
+    if: github.repository == 'allenai/allennlp-server'
+    needs: [build_package]  # needs the package artifact created from 'build_package' job.
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.7', '3.8']
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cleanup directory
+        run: |
+          # Remove the source code so that it doesn't conflict with the wheel
+          # installation.
+          rm -rf allennlp_server/
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install requirements
+        run: |
+          pip install --upgrade pip setuptools wheel
+
+      - name: Download server package
+        uses: actions/download-artifact@v1
+        with:
+          name: server-package
+          path: dist
+
+      - name: Install server package
+        run: |
+          pip install $(ls dist/*.whl)
+
+      - name: Debug info
+        run: |
+          pip freeze
+
 
   docker:
     name: Docker Build
@@ -77,3 +194,33 @@ jobs:
     - name: Test Docker image
       run: |
         docker run --rm -p 8000:8000 allennlp-server --help
+
+  # Publish the distribution files to PyPI
+  publish:
+    name: PyPI
+    if: github.repository == 'allenai/allennlp-server' && (github.event_name == 'release' || github.event_name == 'schedule')
+    needs: [checks, build_package, test_package, docker]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+
+      - name: Install requirements
+        run: |
+          pip install --upgrade pip setuptools wheel twine
+
+      - name: Download server package
+        uses: actions/download-artifact@v1
+        with:
+          name: server-package
+          path: dist
+
+      - name: Upload to PyPI
+        env:
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: twine upload -u allennlp -p $PYPI_PASSWORD dist/*

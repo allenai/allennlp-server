@@ -4,7 +4,7 @@ WORKDIR /stage/allennlp-server
 
 # Copy select files needed for installing requirements.
 # We only copy what we need here so small changes to the repository does not trigger re-installation of the requirements.
-COPY setup.cfg .
+COPY allennlp_server/version.py allennlp_server/version.py
 COPY setup.py .
 COPY README.md .
 RUN pip install -e .

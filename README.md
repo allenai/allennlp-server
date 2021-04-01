@@ -1,8 +1,51 @@
-# AllenNLP Simple Server
+<div align="center">
+    <br>
+    <img src="https://raw.githubusercontent.com/allenai/allennlp/main/docs/img/allennlp-logo-dark.png" width="400"/>
+    <p>
+    Officially supported AllenNLP Server.
+    </p>
+    <hr/>
+</div>
 
 This repo contains a simple demo server for serving a model. To file an issue, please open a ticket on https://github.com/allenai/allennlp and tag it with "Server".
 
-## Installation
+<p align="center">
+    <a href="https://github.com/allenai/allennlp/actions">
+        <img alt="Build" src="https://github.com/allenai/allennlp-server/workflows/CI/badge.svg?event=push&branch=main">
+    </a>
+    <a href="https://pypi.org/project/allennlp-server/">
+        <img alt="PyPI" src="https://img.shields.io/pypi/v/allennlp-server">
+    </a>
+    <a href="https://github.com/agururajvais/allennlp-server/blob/master/LICENSE">
+        <img alt="License" src="https://img.shields.io/github/license/allenai/allennlp-server?color=blue&cachedrop">
+    </a>
+    <a href="https://codecov.io/gh/allenai/allennlp">
+        <img alt="Codecov" src="https://codecov.io/gh/allenai/allennlp-server/branch/main/graph/badge.svg">
+    </a>
+    <br/>
+</p>
+
+##  Installation
+
+### From PyPI
+
+`allennlp-server` is available on PyPI. To install with `pip`, just run
+
+```bash
+pip install allennlp-server
+```
+
+Note that the `allennlp-server` package is tied to the [`allennlp` core package](https://pypi.org/projects/allennlp) and [`allennlp-models` package](https://pypi.org/projects/allennlp-models). Therefore when you install the models package you will get the corresponding version of `allennlp` and `allennlp-models` (if you haven't already installed `allennlp` or `allennlp-models`). For example,
+
+```bash
+pip install allennlp-server
+pip freeze | grep allennlp
+# > allennlp==2.2.0
+# > allennlp-models==2.2.0
+# > allennlp-server==1.0.0
+```
+
+### From source
 
 You can install AllenNLP Server by cloning our git repository:
 
