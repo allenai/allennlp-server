@@ -41,7 +41,6 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
-        "Topic :: Scientific/Engineering :: Visualization",
     ],
     keywords="allennlp simple demo server serve models configuration file NLP deep learning machine reading",
     url="https://github.com/allenai/allennlp-server",
