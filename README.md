@@ -1,14 +1,15 @@
 <div align="center">
     <br>
+    <a href="https://github.com/allenai/allennlp">
     <img src="https://raw.githubusercontent.com/allenai/allennlp/main/docs/img/allennlp-logo-dark.png" width="400"/>
+    </a>
+    <br>
+    <br>
     <p>
-    Officially supported AllenNLP Server.
+    A demo server for AllenNLP models.
     </p>
     <hr/>
 </div>
-
-This repo contains a simple demo server for serving a model. To file an issue, please open a ticket on https://github.com/allenai/allennlp and tag it with "Server".
-
 <p align="center">
     <a href="https://github.com/allenai/allennlp/actions">
         <img alt="Build" src="https://github.com/allenai/allennlp-server/workflows/CI/badge.svg?event=push&branch=main">
@@ -24,6 +25,10 @@ This repo contains a simple demo server for serving a model. To file an issue, p
     </a>
     <br/>
 </p>
+
+<div align="center">
+❗️ To file an issue, please open a ticket on <a href="https://github.com/allenai/allennlp/issues/new/choose">allenai/allennlp</a> and tag it with "Server". ❗️
+</div>
 
 ##  Installation
 
