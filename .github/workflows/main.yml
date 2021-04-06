@@ -95,8 +95,8 @@ jobs:
         run: |
           # The get_version.py script requires the 'requests' package.
           pip install requests
-          LATEST=$(scripts/get_version.py latest)
-          CURRENT=$(scripts/get_version.py current)
+          LATEST=$(python scripts/get_version.py latest)
+          CURRENT=$(python scripts/get_version.py current)
           # Verify that current version is ahead of the last release.
           if [ "$CURRENT" == "$LATEST" ]; then
               echo "Current version needs to be ahead of latest release in order to build nightly release";
@@ -109,7 +109,7 @@ jobs:
         run: |
           # Remove 'refs/tags/' to get the actual tag from the release.
           TAG=${GITHUB_REF#refs/tags/};
-          VERSION=$(scripts/get_version.py current)
+          VERSION=$(python scripts/get_version.py current)
           if [ "$TAG" != "$VERSION" ]; then
               echo "Bad tag or version. Tag $TAG does not match $VERSION";
               exit 1;
