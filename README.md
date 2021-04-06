@@ -11,8 +11,8 @@
     <hr/>
 </div>
 <p align="center">
-    <a href="https://github.com/allenai/allennlp/actions">
-        <img alt="Build" src="https://github.com/allenai/allennlp-server/workflows/CI/badge.svg?event=push&branch=main">
+    <a href="https://github.com/allenai/allennlp-server/actions">
+        <img alt="Build" src="https://github.com/allenai/allennlp-server/workflows/CI/badge.svg?event=push&branch=master">
     </a>
     <a href="https://pypi.org/project/allennlp-server/">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/allennlp-server">
@@ -20,11 +20,9 @@
     <a href="https://github.com/agururajvais/allennlp-server/blob/master/LICENSE">
         <img alt="License" src="https://img.shields.io/github/license/allenai/allennlp-server?color=blue&cachedrop">
     </a>
-    <a href="https://codecov.io/gh/allenai/allennlp">
-        <img alt="Codecov" src="https://codecov.io/gh/allenai/allennlp-server/branch/main/graph/badge.svg">
-    </a>
     <br/>
 </p>
+<br/>
 
 <div align="center">
 ❗️ To file an issue, please open a ticket on <a href="https://github.com/allenai/allennlp/issues/new/choose">allenai/allennlp</a> and tag it with "Server". ❗️
