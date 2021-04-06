@@ -6,6 +6,8 @@ on:
   push:
     branches:
     - master
+  release:
+    types: [published]
   schedule:
   - cron: '17 11 * * 1,2,3,4,5'  # early morning Monday - Friday
 
