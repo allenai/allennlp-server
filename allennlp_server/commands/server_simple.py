@@ -312,7 +312,7 @@ _PAGE_TEMPLATE = Template(
         })
 
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', '/predict');
+        xhr.open('POST', 'predict');
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.onload = function() {
             if (xhr.status == 200) {
