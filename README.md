@@ -38,7 +38,7 @@
 pip install allennlp-server
 ```
 
-Note that the `allennlp-server` package is tied to the [`allennlp` core package](https://pypi.org/projects/allennlp) and [`allennlp-models` package](https://pypi.org/projects/allennlp-models). Therefore when you install the server package you will get the latest compatible version of `allennlp` and `allennlp-models` (if you haven't already installed `allennlp` or `allennlp-models`). For example,
+Note that the `allennlp-server` package is tied to the [`allennlp` core package](https://pypi.org/project/allennlp) and [`allennlp-models` package](https://pypi.org/project/allennlp-models). Therefore when you install the server package you will get the latest compatible version of `allennlp` and `allennlp-models` (if you haven't already installed `allennlp` or `allennlp-models`). For example,
 
 ```bash
 pip install allennlp-server
