@@ -7,7 +7,7 @@ black
 flake8
 
 # Static type checking
-mypy==0.950
+mypy==0.982
 
 pytest
 
